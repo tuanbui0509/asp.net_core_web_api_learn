@@ -11,6 +11,5 @@ namespace asp.net_core_web_api_learn.Model
     public class Product : ProductVM
     {
         public Guid ProductId { get; set; }
-        
     }
 }
