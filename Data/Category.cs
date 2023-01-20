@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace MyWebApiApp.Data
+namespace asp.net_core_web_api_learn.Data
 {
     [Table("Category")]
     public class Category

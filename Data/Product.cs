@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace MyWebApiApp.Data
+namespace asp.net_core_web_api_learn.Data
 {
     [Table("Product")]
     public class Product
@@ -25,8 +21,13 @@ namespace MyWebApiApp.Data
         public byte Discount { get; set; }
 
         public int? CategoryId { get; set; }
-        
+
         [ForeignKey("CategoryId")]
         public Category Category { get; set; }
+        public ICollection<OrderDetail> OrderDetails { get; set; }
+        public Product()
+        {
+            OrderDetails = new HashSet<OrderDetail>();
+        }
     }
 }
