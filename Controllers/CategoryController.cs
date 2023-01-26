@@ -1,4 +1,5 @@
 using asp.net_core_web_api_learn.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MyWebApiApp.Models;
 
@@ -18,11 +19,12 @@ namespace asp.net_core_web_api_learn.Controllers
         public IActionResult GetAll()
         {
             var categories = _dbContext.Categories.ToList();
-            return Ok(new {
+            return Ok(new
+            {
                 Data = categories
             });
         }
-        
+
         [HttpGet("{id}")]
         public IActionResult GetById(int id)
         {
@@ -38,6 +40,7 @@ namespace asp.net_core_web_api_learn.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult CreateNewCategory(CategoryVM model)
         {
             try
@@ -48,7 +51,7 @@ namespace asp.net_core_web_api_learn.Controllers
                 };
                 _dbContext.Add(category);
                 _dbContext.SaveChanges();
-                return Ok(category);
+                return StatusCode(StatusCodes.Status201Created, category);
             }
             catch
             {
@@ -64,7 +67,23 @@ namespace asp.net_core_web_api_learn.Controllers
             {
                 category.CategoryName = model.CategoryName;
                 _dbContext.SaveChanges();
-                return NoContent();
+                return StatusCode(StatusCodes.Status204NoContent, category);
+            }
+            else
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCategoryById(int id)
+        {
+            var category = _dbContext.Categories.SingleOrDefault(ca => ca.CategoryId == id);
+            if (category != null)
+            {
+                _dbContext.Categories.Remove(category);
+                _dbContext.SaveChanges();
+                return StatusCode(StatusCodes.Status200OK);
             }
             else
             {
