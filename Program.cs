@@ -1,5 +1,6 @@
 using System.Text;
 using asp.net_core_web_api_learn.Data;
+using asp.net_core_web_api_learn.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -32,8 +33,11 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
 builder.Services.AddAuthorization();
-builder.Services.AddDbContext<MyDbContext>(option =>{
+builder.Services.AddDbContext<MyDbContext>(option =>
+{
     option.UseSqlServer(builder.Configuration.GetConnectionString("MyDB"));
 });
 var app = builder.Build();

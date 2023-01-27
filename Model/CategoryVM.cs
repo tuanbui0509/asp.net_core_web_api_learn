@@ -1,11 +1,8 @@
-using System.ComponentModel.DataAnnotations;
-
-namespace MyWebApiApp.Models
+namespace asp.net_core_web_api_learn.Model
 {
     public class CategoryVM
     {
-        [Required]
-        [MaxLength(50)]
+        public int CategoryId { get; set; }
         public string CategoryName { get; set; }
     }
 }
