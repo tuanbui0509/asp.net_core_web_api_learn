@@ -1,14 +1,16 @@
 using asp.net_core_web_api_learn.Data;
-using asp.net_core_web_api_learn.Model;
+using asp.net_core_web_api_learn.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace asp.net_core_web_api_learn.Services
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly MyDbContext _dbContext;
+        public static int PAGE_SIZE { get; set; } = 5;
+        private readonly MyDbContext _context;
         public CategoryRepository(MyDbContext dbContext)
         {
-            _dbContext = dbContext;
+            _context = dbContext;
         }
         public CategoryVM Add(CategoryModel category)
         {
@@ -16,8 +18,8 @@ namespace asp.net_core_web_api_learn.Services
             {
                 CategoryName = category.CategoryName
             };
-            _dbContext.Add(newCategory);
-            _dbContext.SaveChanges();
+            _context.Add(newCategory);
+            _context.SaveChanges();
             return new CategoryVM
             {
                 CategoryId = newCategory.CategoryId,
@@ -27,27 +29,52 @@ namespace asp.net_core_web_api_learn.Services
 
         public void Delete(int id)
         {
-            var category = _dbContext.Categories.SingleOrDefault(ca => ca.CategoryId == id);
+            var category = _context.Categories.SingleOrDefault(ca => ca.CategoryId == id);
             if (category != null)
             {
-                _dbContext.Categories.Remove(category);
-                _dbContext.SaveChanges();
+                _context.Categories.Remove(category);
+                _context.SaveChanges();
             }
         }
 
-        public List<CategoryVM> GetAll()
+        public List<CategoryVM> GetAll(string search, string sortBy, int page = 1)
         {
-            var categories = _dbContext.Categories.Select(ca => new CategoryVM()
+            var allCategories = _context.Categories.AsQueryable();
+
+            #region Filtering
+            if (!string.IsNullOrEmpty(search))
+            {
+                allCategories = allCategories.Where(hh => hh.CategoryName.Contains(search));
+            }
+            #endregion
+
+            #region Sorting
+            //Default sort by Name (TenHh)
+            allCategories = allCategories.OrderBy(hh => hh.CategoryName);
+
+            if (!string.IsNullOrEmpty(sortBy))
+            {
+                switch (sortBy)
+                {
+                    case "productName_desc":
+                        allCategories = allCategories.OrderByDescending(hh => hh.CategoryName);
+                        break;
+                }
+            }
+            #endregion
+
+            var result = PaginatedList<Category>.CreatePage(allCategories, page, PAGE_SIZE);
+
+            return result.Select(ca => new CategoryVM()
             {
                 CategoryId = ca.CategoryId,
                 CategoryName = ca.CategoryName
-            });
-            return categories.ToList();
+            }).ToList();
         }
 
         public CategoryVM GetById(int id)
         {
-            var category = _dbContext.Categories.SingleOrDefault(ca => ca.CategoryId == id);
+            var category = _context.Categories.SingleOrDefault(ca => ca.CategoryId == id);
             if (category != null)
             {
                 return new CategoryVM()
@@ -59,11 +86,11 @@ namespace asp.net_core_web_api_learn.Services
             return null;
         }
 
-        public void Update(CategoryVM category)
+        public void Update(CategoryModel category, int id)
         {
-            var _category = _dbContext.Categories.SingleOrDefault(ca => ca.CategoryId == category.CategoryId);
+            var _category = _context.Categories.SingleOrDefault(ca => ca.CategoryId == id);
             _category.CategoryName = category.CategoryName;
-            _dbContext.SaveChanges();
+            _context.SaveChanges();
         }
     }
 }

@@ -1,4 +1,4 @@
-using asp.net_core_web_api_learn.Model;
+using asp.net_core_web_api_learn.Models;
 using asp.net_core_web_api_learn.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,11 +16,11 @@ namespace asp.net_core_web_api_learn.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll(string? search, string? sortBy = "productName_desc", int page = 1)
         {
             try
             {
-                var categories = _categoryRepository.GetAll();
+                var categories = _categoryRepository.GetAll(search, sortBy, page);
                 return Ok(new
                 {
                     Data = categories
@@ -69,15 +69,16 @@ namespace asp.net_core_web_api_learn.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateCategoryById(int id, CategoryVM model)
+        public IActionResult UpdateCategoryById(int id, CategoryModel model)
         {
-            if (id != model.CategoryId)
+            var category = _categoryRepository.GetById(id);
+            if (id != category.CategoryId)
             {
                 return BadRequest();
             }
             try
             {
-                _categoryRepository.Update(model);
+                _categoryRepository.Update(model, id);
                 return NoContent();
             }
             catch

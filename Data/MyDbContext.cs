@@ -12,6 +12,7 @@ namespace asp.net_core_web_api_learn.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+        public DbSet<Personal> User { get; set; }
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,15 +39,13 @@ namespace asp.net_core_web_api_learn.Data
                     .WithMany(e => e.OrderDetails)
                     .HasForeignKey(e => e.ProductId)
                     .HasConstraintName("PK_ProductDetail_Order");
-                // entity.HasOne(e => e.Order)
-                //     .WithMany(e => e.OrderDetails)
-                //     .HasForeignKey(e => e.OrderId)
-                //     .HasConstraintName("FK_OrderDetail_Order");
+            });
 
-                // entity.HasOne(e => e.Product)
-                //     .WithMany(e => OrderDetails)
-                //     .HasForeignKey(e => e.ProductId)
-                //     .HasConstraintName("PK_ProductDetail_Order");
+            modelBuilder.Entity<Personal> (entity =>{
+                entity.HasIndex(e=>e.UserName).IsUnique();
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.LastName).IsRequired().HasMaxLength(150);
+                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(150);
             });
         }
     }

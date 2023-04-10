@@ -1,4 +1,4 @@
-namespace asp.net_core_web_api_learn.Model
+namespace asp.net_core_web_api_learn.Models
 {
     public class CategoryVM
     {
