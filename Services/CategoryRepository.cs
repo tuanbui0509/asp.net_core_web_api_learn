@@ -59,6 +59,9 @@ namespace asp.net_core_web_api_learn.Services
                     case "productName_desc":
                         allCategories = allCategories.OrderByDescending(hh => hh.CategoryName);
                         break;
+                     case "categoryId_desc":
+                        allCategories = allCategories.OrderByDescending(hh => hh.CategoryId);
+                        break;
                 }
             }
             #endregion
