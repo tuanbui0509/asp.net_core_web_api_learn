@@ -1,5 +1,7 @@
+using System.Net;
 using asp.net_core_web_api_learn.Models;
 using asp.net_core_web_api_learn.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [Route("api/[controller]")]
@@ -13,6 +15,7 @@ public class ProductController : ControllerBase
         _productRepository = productRepository;
     }
     [HttpGet]
+    [Authorize]
     public ActionResult GetAllProducts(string? search, double? from, double? to, string? sortBy = "productName_desc", int page = 1)
     {
         var result = _productRepository.GetAll(search, from, to, sortBy, page);
@@ -68,6 +71,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize]
     public IActionResult Delete(string id)
     {
         try
